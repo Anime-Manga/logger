@@ -9,7 +9,7 @@
     "eslint": "eslint",
     "eslint-fix": "eslint --fix",
     "test_dev": "cd ./test && vitest",
-    "test": "cd ./test && vitest run",
+    "test": "cd ./test && FORCE_COLOR=1 vitest run",
     "build": "tsc"
   },
   "keywords": [],
