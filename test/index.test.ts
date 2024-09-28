@@ -12,7 +12,6 @@ describe("Test format", () => {
 
     it("check format debug", () => {
         logger.debug("Hi!");
-        console.log(output);
         assert.match(output, logRegex, "Format isn't correct");
     });
     it("check format error", () => {
