@@ -23,7 +23,7 @@ jobs:
               run: npm i
 
             - name: Check syntax typescript
-              run: npm typecheck
+              run: npm run typecheck
 
             - name: Check syntax and rules of Eslint
               run: npm run eslint
