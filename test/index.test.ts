@@ -1,7 +1,7 @@
 import { describe, it, expect, assert, vi } from "vitest";
 
 import Logger, { ILevel } from "../index";
-import {alternateCase, listLevel} from "./utils/utils"
+import {alternateCase, listLevel} from "./utils/utils";
 
 let output: any = null;
 
@@ -16,7 +16,7 @@ describe("Test format", () => {
     for (const objectLevel of listLevel) {
         it(`check format ${objectLevel.level}`, () => {
             output = null;
-            let logRegex = `\\\\u001b\\[\\d{1,3}m\\[\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}\\+\\d{2}:\\d{2}\\] \\[${objectLevel.level.toUpperCase()}\\] \\[TEST] .+?\\\\u001b\\[\\d{1,3}m`;
+            const logRegex = `\\\\u001b\\[\\d{1,3}m\\[\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}\\+\\d{2}:\\d{2}\\] \\[${objectLevel.level.toUpperCase()}\\] \\[TEST] .+?\\\\u001b\\[\\d{1,3}m`;
             
             const logger = new Logger("test", captureLog);
 
@@ -48,8 +48,8 @@ describe("Test log level from ENV", () => {
         output = "";
         logger.debug("Hi! custom");
         
-        expect(output).empty
-    })
+        return expect(output).empty;
+    });
     
     it("Log level: null", () => {
         output = null;
@@ -60,8 +60,8 @@ describe("Test log level from ENV", () => {
         output = "";
         logger.debug("Hi! custom");
         
-        expect(output).empty
-    })
+        return expect(output).empty;
+    });
     
     it("Log level: undefined", () => {
         output = null;
@@ -71,8 +71,8 @@ describe("Test log level from ENV", () => {
         output = "";
         logger.debug("Hi! custom");
         
-        expect(output).empty
-    })
+        return expect(output).empty;
+    });
     
     for (const objectLevel of listLevel) {
         it(`Log level: ${objectLevel.level}`, () => {
@@ -81,7 +81,7 @@ describe("Test log level from ENV", () => {
 
             const logger = new Logger("test", captureLog);
             logger[objectLevel.level]("Hi!");
-            expect(output).not.null
+            return expect(output).not.null;
         });
     }
     
@@ -92,7 +92,7 @@ describe("Test log level from ENV", () => {
 
             const logger = new Logger("test", captureLog);
             logger[objectLevel.level]("Hi!");
-            expect(output).not.null
+            return expect(output).not.null;
         });
     }
     
@@ -103,37 +103,37 @@ describe("Test log level from ENV", () => {
 
             const logger = new Logger("test", captureLog);
             logger[objectLevel.level]("Hi!");
-            expect(output).not.null
+            return expect(output).not.null;
         });
     }
 
     it("Log level: debrn (not exist)", () => {
         process.env.LOG_LEVEL = "debrn";
-        const exitCode = vi.spyOn(process, 'exit');
+        const exitCode = vi.spyOn(process, "exit");
 
-        try{
+        try {
             new Logger("test", captureLog);
-        }catch{
+        } catch {
             //ignore
         }
 
-        expect(exitCode).toHaveBeenCalledWith(1);
-    })
+        return expect(exitCode).toHaveBeenCalledWith(1);
+    });
 
     it("Log level: 1234 (not exist)", () => {
         //@ts-ignore
         process.env.LOG_LEVEL = 1234;
-        const exitCode = vi.spyOn(process, 'exit');
+        const exitCode = vi.spyOn(process, "exit");
 
-        try{
+        try {
             new Logger("test", captureLog);
-        }catch{
+        } catch {
             //ignore
         }
 
-        expect(exitCode).toHaveBeenCalledWith(1);
-    })
-})
+        return expect(exitCode).toHaveBeenCalledWith(1);
+    });
+});
 
 
 describe("Test print log level", () => {
@@ -146,31 +146,37 @@ describe("Test print log level", () => {
                 const logger = new Logger("test", captureLog);
                 logger[singleLevel]("Hi!");
 
-                if(objectLevel.level === "debug"){
-                    expect(output).not.null
+                if (objectLevel.level === "debug"){
+                    //eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                    expect(output).not.null;
                     continue;
                 }
                 
-                if((["debug", "info"] as Array<ILevel>)){
-                    expect(output).not.null
+                if ((["debug", "info"] as Array<ILevel>)){
+                    //eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                    expect(output).not.null;
                     continue;
                 }
                 
-                if((["debug", "info", "warn"] as Array<ILevel>)){
-                    expect(output).not.null
+                if ((["debug", "info", "warn"] as Array<ILevel>)){
+                    //eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                    expect(output).not.null;
                     continue;
                 }
                 
-                if((["debug", "info", "error"] as Array<ILevel>)){
-                    expect(output).not.null
+                if ((["debug", "info", "error"] as Array<ILevel>)){
+                    //eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                    expect(output).not.null;
                     continue;
                 }
                 
-                if((["debug", "info", "error", "fatal"] as Array<ILevel>)){
-                    expect(output).not.null
+                if ((["debug", "info", "error", "fatal"] as Array<ILevel>)){
+                    //eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                    expect(output).not.null;
                     continue;
                 }
 
+                //eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 expect(output).null;
             }
         });
