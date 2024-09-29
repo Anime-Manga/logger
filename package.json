@@ -1,5 +1,5 @@
 {
-  "name": "logger",
+  "name": "@anime-manga/logger",
   "version": "1.0.0",
   "author": "cesxhin",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "eslint-fix": "eslint --fix",
     "test-dev": "cd ./test && vitest",
     "test": "cd ./test && FORCE_COLOR=1 vitest run",
-    "build": "tsc --checkJs",
+    "build": "tsc",
     "clear": "rm -rf node_modules package-lock.json"
   },
   "dependencies": {
