@@ -1,58 +1,178 @@
-import Logger from "../index";
-import { describe, it, expect, assert } from "vitest";
-let output = "";
+import { describe, it, expect, assert, vi } from "vitest";
 
-function captureLog(message: any){
+import Logger, { ILevel } from "../index";
+import {alternateCase, listLevel} from "./utils/utils"
+
+let output: any = null;
+
+function captureLog(message: string){
+    //@ts-ignore
     output = JSON.stringify(message).replaceAll("\"", "");
 }
 
+process.env.LOG_LEVEL = "debug";
+
 describe("Test format", () => {
-    const logRegex = /\\u001b\[\d{1,3}m\[\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}\+\d{2}:\d{2}\] \[(DEBUG|INFO|WARNING|ERROR|FATAL)\] \[TEST] .+?\\u001b\[\d{1,3}m/;
-    const logger = new Logger("test", captureLog);
+    for (const objectLevel of listLevel) {
+        it(`check format ${objectLevel.level}`, () => {
+            output = null;
+            let logRegex = `\\\\u001b\\[\\d{1,3}m\\[\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}\\+\\d{2}:\\d{2}\\] \\[${objectLevel.level.toUpperCase()}\\] \\[TEST] .+?\\\\u001b\\[\\d{1,3}m`;
+            
+            const logger = new Logger("test", captureLog);
 
-    it("check format debug", () => {
-        logger.debug("Hi!");
-        assert.match(output, logRegex, "Format isn't correct");
-    });
-    it("check format error", () => {
-
-        logger.error("Hi!");
-        assert.match(output, logRegex, "Format isn't correct");
-    });
-    it("check format fatal", () => {
-        logger.fatal("Hi!");
-        assert.match(output, logRegex, "Format isn't correct");
-    });
-    it("check format info", () => {
-        logger.info("Hi!");
-        assert.match(output, logRegex, "Format isn't correct");
-    });
-    it("check format warning", () => {
-        logger.warn("Hi!");
-        assert.match(output, logRegex, "Format isn't correct");
-    });
+            logger[objectLevel.level]("Hi!");
+            
+            assert.match(output, new RegExp(logRegex), `Format isn't correct for level --> ${objectLevel.level}`);
+        });
+    }
 });
 
 describe("Test colors", () => {
-    const logger = new Logger("test", captureLog);
-    it("check color debug", () => {
-        logger.debug("Hi!");
-        expect(output.startsWith("\\u001b[90m") && output.endsWith("\\u001b[39m")).eq(true);
-    });
-    it("check color error", () => {
-        logger.error("Hi!");
-        expect(output.startsWith("\\u001b[31m") && output.endsWith("\\u001b[39m")).eq(true);
-    });
-    it("check color fatal", () => {
-        logger.fatal("Hi!");
-        expect(output.startsWith("\\u001b[91m") && output.endsWith("\\u001b[39m")).eq(true);
-    });
-    it("check color info", () => {
-        logger.info("Hi!");
-        expect(output.startsWith("\\u001b[34m") && output.endsWith("\\u001b[39m")).eq(true);
-    });
-    it("check color warning", () => {
-        logger.warn("Hi!");
-        expect(output.startsWith("\\u001b[33m") && output.endsWith("\\u001b[39m")).eq(true);
-    });
+    for (const objectLevel of listLevel) {
+        it(`check color ${objectLevel.level}`, () => {
+            output = null;
+
+            const logger = new Logger("test", captureLog);
+            logger[objectLevel.level]("Hi!");
+            expect(output.startsWith(objectLevel.color) && output.endsWith("\\u001b[39m")).eq(true);
+        });
+    }
+});
+
+describe("Test log level from ENV", () => {
+    it("Log level: (empty)", () => {
+        output = null;
+        process.env.LOG_LEVEL = "";
+        
+        const logger = new Logger("test", captureLog);
+        output = "";
+        logger.debug("Hi! custom");
+        
+        expect(output).empty
+    })
+    
+    it("Log level: null", () => {
+        output = null;
+        //@ts-ignore
+        process.env.LOG_LEVEL = null;
+        
+        const logger = new Logger("test", captureLog);
+        output = "";
+        logger.debug("Hi! custom");
+        
+        expect(output).empty
+    })
+    
+    it("Log level: undefined", () => {
+        output = null;
+        process.env.LOG_LEVEL = undefined;
+        
+        const logger = new Logger("test", captureLog);
+        output = "";
+        logger.debug("Hi! custom");
+        
+        expect(output).empty
+    })
+    
+    for (const objectLevel of listLevel) {
+        it(`Log level: ${objectLevel.level}`, () => {
+            output = null;
+            process.env.LOG_LEVEL = objectLevel.level;
+
+            const logger = new Logger("test", captureLog);
+            logger[objectLevel.level]("Hi!");
+            expect(output).not.null
+        });
+    }
+    
+    for (const objectLevel of listLevel) {
+        it(`Log level: ${objectLevel.level.toUpperCase()}`, () => {
+            output = null;
+            process.env.LOG_LEVEL = objectLevel.level.toUpperCase();
+
+            const logger = new Logger("test", captureLog);
+            logger[objectLevel.level]("Hi!");
+            expect(output).not.null
+        });
+    }
+    
+    for (const objectLevel of listLevel) {
+        it(`Log level: ${alternateCase(objectLevel.level)}`, () => {
+            output = null;
+            process.env.LOG_LEVEL = alternateCase(objectLevel.level);
+
+            const logger = new Logger("test", captureLog);
+            logger[objectLevel.level]("Hi!");
+            expect(output).not.null
+        });
+    }
+
+    it("Log level: debrn (not exist)", () => {
+        process.env.LOG_LEVEL = "debrn";
+        const exitCode = vi.spyOn(process, 'exit');
+
+        try{
+            new Logger("test", captureLog);
+        }catch{
+            //ignore
+        }
+
+        expect(exitCode).toHaveBeenCalledWith(1);
+    })
+
+    it("Log level: 1234 (not exist)", () => {
+        //@ts-ignore
+        process.env.LOG_LEVEL = 1234;
+        const exitCode = vi.spyOn(process, 'exit');
+
+        try{
+            new Logger("test", captureLog);
+        }catch{
+            //ignore
+        }
+
+        expect(exitCode).toHaveBeenCalledWith(1);
+    })
+})
+
+
+describe("Test print log level", () => {
+    for (const objectLevel of listLevel) {
+        it(`Log level: ${objectLevel.level}`, () => {
+            for (const singleLevel of listLevel.map((singleObjectlevel) => singleObjectlevel.level)) {
+                output = null;
+                process.env.LOG_LEVEL = singleLevel;
+
+                const logger = new Logger("test", captureLog);
+                logger[singleLevel]("Hi!");
+
+                if(objectLevel.level === "debug"){
+                    expect(output).not.null
+                    continue;
+                }
+                
+                if((["debug", "info"] as Array<ILevel>)){
+                    expect(output).not.null
+                    continue;
+                }
+                
+                if((["debug", "info", "warn"] as Array<ILevel>)){
+                    expect(output).not.null
+                    continue;
+                }
+                
+                if((["debug", "info", "error"] as Array<ILevel>)){
+                    expect(output).not.null
+                    continue;
+                }
+                
+                if((["debug", "info", "error", "fatal"] as Array<ILevel>)){
+                    expect(output).not.null
+                    continue;
+                }
+
+                expect(output).null;
+            }
+        });
+    }
 });
