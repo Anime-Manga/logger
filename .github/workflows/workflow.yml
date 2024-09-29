@@ -46,7 +46,7 @@ jobs:
                       echo "Error: Tag version ($TAG_VERSION) does not match package.json version ($PACKAGE_VERSION)"
                       exit 1
                   fi
-    build:
+    publish:
         runs-on: ubuntu-latest
         needs: check-version
         steps:
@@ -58,20 +58,11 @@ jobs:
               with:
                   node-version: '22'
 
+            - name: Installation pacakges
+              run: npm i
+
             - name: Start build
               run: npm run build && mv package.json ./dist/
-
-    publish:
-        runs-on: ubuntu-latest
-        needs: build
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-              
-            - name: Setup node v22
-              uses: actions/setup-node@v4
-              with:
-                  node-version: '22'
 
             - name: Publish Package
               run: cd ./dist && npm publish

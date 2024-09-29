@@ -10,7 +10,8 @@
     "eslint-fix": "eslint --fix",
     "test-dev": "cd ./test && vitest",
     "test": "cd ./test && FORCE_COLOR=1 vitest run",
-    "build": "tsc"
+    "build": "tsc",
+    "clear": "rm -rf node_modules package-lock.json"
   },
   "keywords": [],
   "author": "cesxhin",
