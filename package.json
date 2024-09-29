@@ -1,8 +1,12 @@
 {
   "name": "logger",
   "version": "1.0.0",
+  "author": "cesxhin",
+  "license": "MIT",
   "description": "Simplfy logger and user friendly",
-  "main": "index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -10,12 +14,9 @@
     "eslint-fix": "eslint --fix",
     "test-dev": "cd ./test && vitest",
     "test": "cd ./test && FORCE_COLOR=1 vitest run",
-    "build": "tsc",
+    "build": "tsc --checkJs",
     "clear": "rm -rf node_modules package-lock.json"
   },
-  "keywords": [],
-  "author": "cesxhin",
-  "license": "MIT",
   "dependencies": {
     "@stylistic/eslint-plugin-js": "^2.8.0",
     "@types/capture-console": "^1.0.5",

@@ -63,9 +63,9 @@ jobs:
               run: npm i
 
             - name: Start build
-              run: npm run build && mv package.json ./dist/
+              run: npm run build
 
             - name: Publish Package
-              run: cd ./dist && npm publish
+              run: npm publish --provenance --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
